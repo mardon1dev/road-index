@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yo'l Xavfsizligi Indeksi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .step-indicator { transition: all 0.3s ease; }
+        .step-indicator.active { transform: scale(1.1); }
+        .option-card { transition: all 0.2s ease; }
+        .option-card:hover { transform: translateY(-2px); }
+        .option-card:active { transform: scale(0.98); }
+        .option-card.selected { box-shadow: 0 0 0 2px currentColor; }
+        /* Touch-friendly: min 44px tap targets */
+        @media (hover: none) {
+            .option-card:hover { transform: none; }
+        }
+        /* Safe area for notched devices */
+        body { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
+        /* Hide scrollbar but keep scroll */
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        @media print { 
+            .no-print { display: none !important; } 
+            body { background: white; padding: 0; }
+            #home-screen, #assessment-screen { display: none !important; }
+            #results-screen { display: block !important; }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen min-h-[100dvh]">
+    <!-- Asosiy sahifa -->
+    <div id="home-screen" class="min-h-screen min-h-[100dvh] flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8">
+        <div class="text-center max-w-lg w-full">
+            <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-slate-800 mb-3 sm:mb-4">
+                Yo'l Xavfsizligi Indeksi
+            </h1>
+            <p class="text-slate-600 mb-6 sm:mb-8 text-base sm:text-lg px-2">
+                Yo'l holatini baholash va xavfsizlik darajasini aniqlash uchun interaktiv asbob
+            </p>
+            <button id="start-btn" class="w-full sm:w-auto min-h-[48px] bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-semibold py-4 px-6 sm:px-8 rounded-xl shadow-lg transition-all hover:shadow-xl no-print touch-manipulation">
+                Baholashni boshlash
+            </button>
+        </div>
+    </div>
+
+    <!-- Stepper va baholash -->
+    <div id="assessment-screen" class="hidden min-h-screen min-h-[100dvh] py-4 sm:py-6 lg:py-8 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-2xl mx-auto w-full">
+            <!-- Stepper - scrollable on mobile -->
+            <div id="stepper-container" class="flex justify-between gap-1 sm:gap-2 mb-4 sm:mb-6 overflow-x-auto pb-2 -mx-1 px-1 scrollbar-hide" style="-webkit-overflow-scrolling: touch;"></div>
+
+            <!-- Progress bar -->
+            <div class="w-full bg-slate-200 rounded-full h-2 mb-4 sm:mb-6">
+                <div id="progress-bar" class="bg-emerald-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+            </div>
+
+            <!-- Bo'limlar -->
+            <div id="steps-container"></div>
+
+            <!-- Navigatsiya - sticky on mobile -->
+            <div class="flex justify-between mt-6 sm:mt-8 gap-3 sm:gap-4 no-print sticky bottom-0 py-4 bg-slate-50/95 backdrop-blur-sm -mx-4 px-4 sm:mx-0 sm:px-0 sm:static sm:bg-transparent sm:py-0">
+                <button id="prev-btn" class="hidden min-h-[48px] flex-1 sm:flex-initial px-4 sm:px-6 py-3 rounded-xl border border-slate-300 hover:bg-slate-100 active:bg-slate-200 font-medium transition-colors touch-manipulation">
+                    Orqaga
+                </button>
+                <div class="flex-1 sm:flex-initial"></div>
+                <button id="next-btn" class="min-h-[48px] flex-1 sm:flex-initial px-4 sm:px-6 py-3 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-xl font-medium transition-colors touch-manipulation">
+                    Keyingi
+                </button>
+                <button id="submit-btn" class="hidden min-h-[48px] flex-1 sm:flex-initial px-4 sm:px-6 py-3 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-xl font-medium transition-colors touch-manipulation">
+                    Natijani ko'rish
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Natijalar dashboard -->
+    <div id="results-screen" class="hidden min-h-screen min-h-[100dvh] py-4 sm:py-6 lg:py-8 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-2xl mx-auto w-full">
+            <h2 class="text-xl sm:text-2xl font-bold text-slate-800 mb-4 sm:mb-6 text-center">Baholash natijalari</h2>
+            
+            <!-- Umumiy ball -->
+            <div id="score-display" class="text-center p-6 sm:p-8 rounded-2xl mb-6 sm:mb-8">
+                <div id="total-score" class="text-4xl sm:text-5xl lg:text-6xl font-bold mb-2">0</div>
+                <div id="score-label" class="text-base sm:text-xl font-semibold break-words"></div>
+                <div id="score-description" class="text-slate-600 mt-2 text-sm sm:text-base"></div>
+            </div>
+
+            <!-- Bo'limlar bo'yicha tafsilot -->
+            <div class="bg-white rounded-2xl shadow-sm p-4 sm:p-6 mb-6 sm:mb-8 overflow-hidden">
+                <h3 class="font-semibold text-slate-800 mb-4 text-sm sm:text-base">Bo'limlar bo'yicha ballar</h3>
+                <div id="breakdown-list"></div>
+            </div>
+
+            <!-- Harakatlar -->
+            <div class="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 justify-center no-print">
+                <button id="save-btn" class="w-full sm:w-auto min-h-[48px] px-6 py-3 bg-slate-700 hover:bg-slate-800 active:bg-slate-900 text-white rounded-xl font-medium transition-colors touch-manipulation">
+                    Natijani saqlash
+                </button>
+                <button id="pdf-btn" class="w-full sm:w-auto min-h-[48px] px-6 py-3 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-xl font-medium transition-colors touch-manipulation">
+                    PDF sifatida chiqarish
+                </button>
+                <button id="new-assessment-btn" class="w-full sm:w-auto min-h-[48px] px-6 py-3 border border-slate-300 hover:bg-slate-100 active:bg-slate-200 rounded-xl font-medium transition-colors touch-manipulation">
+                    Yangi baholash
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

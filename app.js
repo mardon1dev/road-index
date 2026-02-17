@@ -271,9 +271,29 @@ document.getElementById('save-btn').addEventListener('click', () => {
     alert('Natija muvaffaqiyatli saqlandi!');
 });
 
-// PDF chiqarish (print)
-document.getElementById('pdf-btn').addEventListener('click', () => {
-    window.print();
+// PDF chiqarish (print) va mobil uchun Share fallback
+document.getElementById('pdf-btn').addEventListener('click', async () => {
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    // Mobil: Share API - Share sheet orqali Print va "Save to PDF" mavjud
+    if (isMobile && navigator.share) {
+        const totalScore = getTotalScore();
+        const result = RESULT_RANGES.find(r => totalScore >= r.min && totalScore <= r.max);
+        const shareText = `Yo'l Xavfsizligi Indeksi\n\nUmumiy ball: ${totalScore}/100\n${result?.label || ''}\n\n${SECTIONS.map(s => `${s.title}: ${getSectionScore(s.id)}/${s.maxScore}`).join('\n')}`;
+        
+        try {
+            await navigator.share({
+                title: 'Yo\'l Xavfsizligi Indeksi - Natijalar',
+                text: shareText
+            });
+        } catch (err) {
+            // Share bekor qilinsa yoki muvaffaqiyatsiz bo'lsa, print sinab ko'rish
+            setTimeout(() => window.print(), 100);
+        }
+    } else {
+        // Desktop: oddiy print
+        setTimeout(() => window.print(), 50);
+    }
 });
 
 // Yangi baholash

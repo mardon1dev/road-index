@@ -25,23 +25,19 @@ const RESULT_RANGES = [
 let currentStep = 0;
 let answers = {};
 
-// DOM elementlar
-const homeScreen = document.getElementById('home-screen');
+// DOM elementlar (assessment.html da)
 const assessmentScreen = document.getElementById('assessment-screen');
 const resultsScreen = document.getElementById('results-screen');
-const startBtn = document.getElementById('start-btn');
 const prevBtn = document.getElementById('prev-btn');
 const nextBtn = document.getElementById('next-btn');
 const submitBtn = document.getElementById('submit-btn');
 const stepsContainer = document.getElementById('steps-container');
 const progressBar = document.getElementById('progress-bar');
 
-// Boshlash
-startBtn.addEventListener('click', () => {
-    homeScreen.classList.add('hidden');
-    assessmentScreen.classList.remove('hidden');
-    initAssessment();
-});
+// Sahifa yuklanganda baholashni boshlash
+if (assessmentScreen) {
+    document.addEventListener('DOMContentLoaded', () => initAssessment());
+}
 
 // Stepper va bo'limlarni yaratish
 function initAssessment() {
@@ -56,7 +52,7 @@ function initAssessment() {
         const step = document.createElement('div');
         step.className = 'step-indicator flex flex-col items-center flex-shrink-0 min-w-[36px] sm:min-w-0';
         step.innerHTML = `
-            <div class="step-circle w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-xs sm:text-sm font-medium border-2 transition-colors ${i === 0 ? 'bg-emerald-600 border-emerald-600 text-white' : 'border-slate-300 text-slate-500'}">${i + 1}</div>
+            <div class="step-circle w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-xs sm:text-sm font-medium border-2 transition-colors ${i === 0 ? 'bg-primary-600 border-primary-600 text-white' : 'border-stone-300 text-stone-500'}">${i + 1}</div>
             <span class="step-label text-[10px] sm:text-xs mt-1 text-center hidden sm:inline max-w-[60px] sm:max-w-[70px] leading-tight">${section.title}</span>
         `;
         stepperContainer.appendChild(step);
@@ -92,27 +88,27 @@ function createStepElement(section, index) {
     
     div.innerHTML = `
         <div class="bg-white rounded-2xl shadow-sm p-4 sm:p-6 md:p-8">
-            <h3 class="text-lg sm:text-xl font-semibold text-slate-800 mb-1 sm:mb-2">${section.title}</h3>
-            <p class="text-slate-600 mb-4 sm:mb-6 text-sm sm:text-base">Maksimal ${section.maxScore} ball</p>
+            <h3 class="text-lg sm:text-xl font-semibold text-stone-800 mb-1 sm:mb-2">${section.title}</h3>
+            <p class="text-stone-600 mb-4 sm:mb-6 text-sm sm:text-base">Maksimal ${section.maxScore} ball</p>
             <div class="space-y-3 sm:space-y-4">
                 ${options.map(opt => `
-                    <div class="option-card cursor-pointer min-h-[56px] sm:min-h-[64px] p-3 sm:p-4 rounded-xl border-2 border-slate-200 hover:border-emerald-400 active:border-emerald-500 ${answers[section.id] === opt.value ? 'selected border-emerald-500 bg-emerald-50' : 'bg-white'}" 
+                    <div class="option-card cursor-pointer min-h-[56px] sm:min-h-[64px] p-3 sm:p-4 rounded-xl border-2 border-stone-200 hover:border-primary-400 active:border-primary-500 ${answers[section.id] === opt.value ? 'selected border-primary-500 bg-primary-50' : 'bg-white'}" 
                          data-value="${opt.value}" data-section="${section.id}" data-score="${maxScores[opt.value]}">
                         <div class="flex items-center gap-3 sm:gap-4">
                             <span class="text-xl sm:text-2xl flex-shrink-0">${opt.icon}</span>
                             <div class="flex-1 min-w-0">
-                                <div class="font-medium text-slate-800 text-sm sm:text-base">${opt.label}</div>
-                                <div class="text-xs sm:text-sm text-slate-500 truncate sm:whitespace-normal">${opt.desc} • ${maxScores[opt.value]} ball</div>
+                                <div class="font-medium text-stone-800 text-sm sm:text-base">${opt.label}</div>
+                                <div class="text-xs sm:text-sm text-stone-500 truncate sm:whitespace-normal">${opt.desc} • ${maxScores[opt.value]} ball</div>
                             </div>
-                            <span class="current-score text-emerald-600 font-semibold flex-shrink-0 text-sm sm:text-base">${answers[section.id] === opt.value ? maxScores[opt.value] : ''}</span>
+                            <span class="current-score text-primary-600 font-semibold flex-shrink-0 text-sm sm:text-base">${answers[section.id] === opt.value ? maxScores[opt.value] : ''}</span>
                         </div>
                     </div>
                 `).join('')}
             </div>
-            <div class="mt-4 sm:mt-6 p-3 bg-slate-50 rounded-lg text-sm sm:text-base">
-                <span class="text-slate-600">Joriy ball: </span>
-                <span class="section-score font-bold text-emerald-600">${getSectionScore(section.id)}</span>
-                <span class="text-slate-500"> / ${section.maxScore}</span>
+            <div class="mt-4 sm:mt-6 p-3 bg-stone-50 rounded-lg text-sm sm:text-base">
+                <span class="text-stone-600">Joriy ball: </span>
+                <span class="section-score font-bold text-primary-600">${getSectionScore(section.id)}</span>
+                <span class="text-stone-500"> / ${section.maxScore}</span>
             </div>
         </div>
     `;
@@ -158,8 +154,8 @@ function updateOptionCards(sectionId) {
     stepEl.querySelectorAll('.option-card').forEach(card => {
         const isSelected = answers[sectionId] === card.dataset.value;
         card.classList.toggle('selected', isSelected);
-        card.classList.toggle('border-emerald-500', isSelected);
-        card.classList.toggle('bg-emerald-50', isSelected);
+        card.classList.toggle('border-primary-500', isSelected);
+        card.classList.toggle('bg-primary-50', isSelected);
         const scoreSpan = card.querySelector('.current-score');
         scoreSpan.textContent = isSelected ? maxScores[card.dataset.value] : '';
     });
@@ -177,15 +173,15 @@ function showStep(index) {
     const indicators = document.getElementById('stepper-container').querySelectorAll('.step-indicator');
     indicators.forEach((ind, i) => {
         const circle = ind.querySelector('.step-circle');
-        circle.className = 'step-circle w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium border-2 transition-colors ';
+        circle.className = 'step-circle w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-xs sm:text-sm font-medium border-2 transition-colors ';
         if (i < index) {
-            circle.classList.add('bg-emerald-600', 'border-emerald-600', 'text-white');
+            circle.classList.add('bg-primary-600', 'border-primary-600', 'text-white');
             circle.textContent = '✓';
         } else if (i === index) {
-            circle.classList.add('bg-emerald-600', 'border-emerald-600', 'text-white');
+            circle.classList.add('bg-primary-600', 'border-primary-600', 'text-white');
             circle.textContent = i + 1;
         } else {
-            circle.classList.add('border-slate-300', 'text-slate-500', 'bg-white');
+            circle.classList.add('border-stone-300', 'text-stone-500', 'bg-white');
             circle.textContent = i + 1;
         }
     });
@@ -233,7 +229,7 @@ function showResults() {
     document.getElementById('total-score').className = `text-4xl sm:text-5xl lg:text-6xl font-bold mb-2 ${result.text}`;
     document.getElementById('score-label').textContent = result.label;
     document.getElementById('score-label').className = `text-base sm:text-xl font-semibold break-words ${result.text}`;
-    document.getElementById('score-description').textContent = totalScore === 100 ? "Ajoyib! Yo'l juda xavfsiz." : totalScore >= 80 ? "Yo'l yaxshi holatda." : totalScore >= 41 ? "Qo'shimcha ehtiyot talab qilinadi." : "Jiddiy ta\'mir talab qilinadi.";
+    document.getElementById('score-description').textContent = totalScore === 100 ? "Ajoyib! Yo'l juda xavfsiz." : totalScore >= 80 ? "Yo'l yaxshi holatda." : totalScore >= 41 ? "Qo'shimcha ehtiyot talab qilinadi." : "Jiddiy ta'mir talab qilinadi.";
     
     // Breakdown
     const breakdownList = document.getElementById('breakdown-list');
@@ -241,13 +237,13 @@ function showResults() {
         const score = getSectionScore(s.id);
         const pct = Math.round((score / s.maxScore) * 100);
         return `
-            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 py-3 border-b border-slate-100 last:border-0">
-                <span class="text-slate-700 text-sm sm:text-base flex-1 min-w-0">${s.title}</span>
+            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 py-3 border-b border-stone-100 last:border-0">
+                <span class="text-stone-700 text-sm sm:text-base flex-1 min-w-0">${s.title}</span>
                 <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-                    <div class="flex-1 sm:flex-initial w-16 sm:w-24 h-2 bg-slate-200 rounded-full overflow-hidden min-w-[64px]">
-                        <div class="h-full bg-emerald-500 rounded-full transition-all" style="width: ${pct}%"></div>
+                    <div class="flex-1 sm:flex-initial w-16 sm:w-24 h-2 bg-stone-200 rounded-full overflow-hidden min-w-[64px]">
+                        <div class="h-full bg-primary-500 rounded-full transition-all" style="width: ${pct}%"></div>
                     </div>
-                    <span class="font-semibold text-slate-800 w-14 sm:w-12 text-right text-sm sm:text-base">${score}/${s.maxScore}</span>
+                    <span class="font-semibold text-stone-800 w-14 sm:w-12 text-right text-sm sm:text-base">${score}/${s.maxScore}</span>
                 </div>
             </div>
         `;
@@ -297,7 +293,8 @@ document.getElementById('pdf-btn').addEventListener('click', async () => {
 });
 
 // Yangi baholash
-document.getElementById('new-assessment-btn').addEventListener('click', () => {
+document.getElementById('new-assessment-btn')?.addEventListener('click', () => {
     resultsScreen.classList.add('hidden');
-    homeScreen.classList.remove('hidden');
+    assessmentScreen.classList.remove('hidden');
+    initAssessment();
 });
